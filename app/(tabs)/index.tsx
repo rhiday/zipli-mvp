@@ -1,12 +1,15 @@
-import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
 import supabase from '../../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppNavigation } from '../navigation/AppNavigator';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Button } from '@/components/ui/Button';
 
 // Define a type for donation objects
 interface Donation {
@@ -23,6 +26,8 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const navigation = useAppNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch the user's role from AsyncStorage
@@ -62,6 +67,11 @@ export default function HomeScreen() {
     }
   };
 
+  // Function to navigate to role selection
+  const goToRoleSelection = () => {
+    navigation.navigateToRoleSelection();
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -87,7 +97,7 @@ export default function HomeScreen() {
     return <RecipientDashboard donations={donations} />;
   } else {
     // Default dashboard if role is not set
-    return <DefaultDashboard donations={donations} />;
+    return <DefaultDashboard donations={donations} onSelectRole={goToRoleSelection} />;
   }
 }
 
@@ -174,10 +184,19 @@ function RecipientDashboard({ donations }: { donations: Donation[] }) {
 }
 
 // Default Dashboard Component (for users without a specific role)
-function DefaultDashboard({ donations }: { donations: Donation[] }) {
+function DefaultDashboard({ donations, onSelectRole }: { donations: Donation[], onSelectRole: () => void }) {
   return (
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>Welcome to Zipli</Text>
+      
+      <View style={{ marginVertical: 20, backgroundColor: '#F0F8F4', padding: 15, borderRadius: 10 }}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#0A522D' }}>Choose Your Role</Text>
+        <Text style={{ marginBottom: 15 }}>Select whether you want to donate food or receive donations.</Text>
+        <Button 
+          title="Select Your Role" 
+          onPress={onSelectRole}
+        />
+      </View>
       
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Recent Donations</Text>
       {donations.length === 0 ? (

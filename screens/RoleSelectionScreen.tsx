@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { Button } from "../../components/ui/Button"; // Updated import path
+import { Button } from "../components/ui/Button";
+import { useAppNavigation } from "../app/navigation/AppNavigator";
 
+/**
+ * RoleSelectionScreen - Screen for users to select their role
+ * Either donor or recipient
+ */
 export default function RoleSelectionScreen() {
   const router = useRouter();
+  const navigation = useAppNavigation();
+  const [isSelecting, setIsSelecting] = useState(false);
+
+  // Handle role selection and navigate to appropriate dashboard
+  const handleRoleSelection = async (role: 'donor' | 'recipient') => {
+    try {
+      setIsSelecting(true);
+      
+      // In a real app, this would update the user's role in the database
+      console.log(`Selected role: ${role}`);
+      
+      // Navigate using our central navigation utility
+      if (role === 'donor') {
+        navigation.navigateToDonorDashboard();
+      } else {
+        navigation.navigateToRecipientDashboard();
+      }
+    } catch (error) {
+      console.error('Error selecting role:', error);
+    } finally {
+      setIsSelecting(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -15,14 +43,14 @@ export default function RoleSelectionScreen() {
       <View style={styles.roleContainer}>
         <Text style={styles.roleTitle}>Donor</Text>
         <View style={styles.tagContainer}>
-          <Text style={styles.tag}>Example</Text>
-          <Text style={styles.tag}>Example of donor</Text>
-          <Text style={styles.tag}>Example 2</Text>
-          <Text style={styles.tag}>Example 3</Text>
+          <Text style={styles.tag}>Restaurant</Text>
+          <Text style={styles.tag}>Grocery Store</Text>
+          <Text style={styles.tag}>Food Bank</Text>
+          <Text style={styles.tag}>Community Garden</Text>
         </View>
         <Button 
           title="Continue as donor" 
-          onPress={() => router.push("/login")} // Changed to existing route for now
+          onPress={() => handleRoleSelection('donor')}
         />
       </View>
 
@@ -30,14 +58,14 @@ export default function RoleSelectionScreen() {
       <View style={styles.roleContainer}>
         <Text style={styles.roleTitle}>Recipient</Text>
         <View style={styles.tagContainer}>
-          <Text style={styles.tag}>Example</Text>
-          <Text style={styles.tag}>Example of recipient</Text>
-          <Text style={styles.tag}>Example 2</Text>
-          <Text style={styles.tag}>Example 3</Text>
+          <Text style={styles.tag}>Food Bank</Text>
+          <Text style={styles.tag}>Shelter</Text>
+          <Text style={styles.tag}>Community Center</Text>
+          <Text style={styles.tag}>School Program</Text>
         </View>
         <Button 
           title="Continue as recipient" 
-          onPress={() => router.push("/login")} // Changed to existing route for now
+          onPress={() => handleRoleSelection('recipient')}
         />
       </View>
     </View>

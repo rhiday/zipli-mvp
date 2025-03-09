@@ -31,6 +31,18 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="role-selection" options={{ 
+          title: "Select Role",
+          headerShown: false 
+        }} />
+        <Stack.Screen name="donor-dashboard" options={{ 
+          title: "Donor Dashboard",
+          headerShown: true
+        }} />
+        <Stack.Screen name="recipient-dashboard" options={{ 
+          title: "Recipient Dashboard",
+          headerShown: true
+        }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
