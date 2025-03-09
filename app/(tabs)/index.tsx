@@ -186,48 +186,33 @@ function RecipientDashboard({ donations }: { donations: Donation[] }) {
 // Default Dashboard Component (for users without a specific role)
 function DefaultDashboard({ donations, onSelectRole }: { donations: Donation[], onSelectRole: () => void }) {
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>Welcome to Zipli</Text>
+    <View style={styles.defaultContainer}>
+      <View style={styles.welcomeContainer}>
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>ZIPLI</Text>
+        </View>
+        
+        <Text style={styles.welcomeTitle}>Welcome to Zipli</Text>
+        <Text style={styles.welcomeSubtitle}>
+          Connecting surplus food with those who need it most
+        </Text>
+      </View>
       
-      <View style={{ marginVertical: 20, backgroundColor: '#F0F8F4', padding: 15, borderRadius: 10 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#0A522D' }}>Choose Your Role</Text>
-        <Text style={{ marginBottom: 15 }}>Select whether you want to donate food or receive donations.</Text>
+      <View style={styles.roleSelectionCard}>
+        <Text style={styles.roleCardTitle}>Choose Your Role</Text>
+        <Text style={styles.roleCardDescription}>
+          Select whether you want to donate food or receive donations. Join our community
+          fighting food waste and hunger.
+        </Text>
         <Button 
           title="Select Your Role" 
           onPress={onSelectRole}
         />
       </View>
       
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Recent Donations</Text>
-      {donations.length === 0 ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>No donations found. Be the first to donate!</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={donations}
-          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-          renderItem={({ item }) => (
-            <View style={{ marginVertical: 10, borderBottomWidth: 1, paddingBottom: 10 }}>
-              {item.food_image_url ? (
-                <Image 
-                  source={{ uri: item.food_image_url }} 
-                  style={{ width: '100%', height: 200, borderRadius: 10 }}
-                />
-              ) : (
-                <View style={{ width: '100%', height: 200, borderRadius: 10, backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }}>
-                  <Text>No image available</Text>
-                </View>
-              )}
-              <Text style={{ fontSize: 18, marginTop: 5 }}>
-                {Array.isArray(item.detected_food) ? item.detected_food.join(', ') : item.detected_food || 'Unknown food'}
-              </Text>
-              <Text style={{ color: 'gray' }}>Portions: {item.estimated_portions || 'Unknown'}</Text>
-              <Text style={{ color: 'gray' }}>Shelf Life: {item.estimated_shelf_life || 'Unknown'}</Text>
-            </View>
-          )}
-        />
-      )}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Making food sharing simple</Text>
+      </View>
     </View>
   );
 }
@@ -248,5 +233,78 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  defaultContainer: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+  },
+  welcomeContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  welcomeTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#0A522D',
+    textAlign: 'center',
+  },
+  welcomeSubtitle: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    maxWidth: 300,
+  },
+  roleSelectionCard: {
+    width: '100%',
+    maxWidth: 350,
+    backgroundColor: '#F0F8F4',
+    padding: 25,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  roleCardTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#0A522D',
+    textAlign: 'center',
+  },
+  roleCardDescription: {
+    fontSize: 16,
+    marginBottom: 25,
+    textAlign: 'center',
+    lineHeight: 22,
+    color: '#444',
+  },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#0A522D',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  footer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 16,
+    color: '#555',
   },
 });
