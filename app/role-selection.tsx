@@ -1,3 +1,3 @@
-import RoleSelectionScreen from '../src/screens/RoleSelectionScreen';
+import RoleSelectionScreen from '../screens/RoleSelectionScreen';
 
 export default RoleSelectionScreen; 
