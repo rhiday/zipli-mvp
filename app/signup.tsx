@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity } from "react-native";
 import supabase from "../lib/supabase";
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("recipient"); // Default to recipient
   const [isSigningUp, setIsSigningUp] = useState(false);
   const router = useRouter();
+  const params = useLocalSearchParams();
+  
+  // Get role and organization type from params
+  const [role, setRole] = useState(params.role as string || "recipient");
+  const [organizationType, setOrganizationType] = useState(params.organizationType as string || "");
+
+  // Update states if params change
+  useEffect(() => {
+    if (params.role) {
+      setRole(params.role as string);
+    }
+    if (params.organizationType) {
+      setOrganizationType(params.organizationType as string);
+    }
+  }, [params]);
 
   const handleSignUp = async () => {
     // Validate form
@@ -24,7 +38,10 @@ export default function SignUpScreen() {
         email,
         password,
         options: {
-          data: { role },
+          data: { 
+            role,
+            organizationType 
+          },
         },
       });
 
@@ -45,6 +62,13 @@ export default function SignUpScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
+      
+      {organizationType && (
+        <View style={styles.organizationInfo}>
+          <Text style={styles.organizationTitle}>Organization Type:</Text>
+          <Text style={styles.organizationType}>{organizationType}</Text>
+        </View>
+      )}
       
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Email</Text>
@@ -125,6 +149,24 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
     textAlign: 'center',
+  },
+  organizationInfo: {
+    backgroundColor: '#f0f8ff',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4A90E2',
+  },
+  organizationTitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  organizationType: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
   },
   inputContainer: {
     marginBottom: 16,

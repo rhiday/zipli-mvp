@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "../components/ui/Button";
 import { useAppNavigation } from "../app/navigation/AppNavigator";
@@ -12,21 +12,32 @@ export default function RoleSelectionScreen() {
   const router = useRouter();
   const navigation = useAppNavigation();
   const [isSelecting, setIsSelecting] = useState(false);
+  const [selectedDonorType, setSelectedDonorType] = useState<string | null>(null);
+  const [selectedRecipientType, setSelectedRecipientType] = useState<string | null>(null);
 
-  // Handle role selection and navigate to appropriate dashboard
+  const donorTypes = ["Restaurant", "Grocery Store", "Food Bank", "Community Garden"];
+  const recipientTypes = ["Food Bank", "Shelter", "Community Center", "School Program"];
+
+  // Handle role selection and navigate to signup form
   const handleRoleSelection = async (role: 'donor' | 'recipient') => {
     try {
       setIsSelecting(true);
       
-      // In a real app, this would update the user's role in the database
-      console.log(`Selected role: ${role}`);
+      // Get the selected organization type
+      const orgType = role === 'donor' ? selectedDonorType : selectedRecipientType;
       
-      // Navigate using our central navigation utility
-      if (role === 'donor') {
-        navigation.navigateToDonorDashboard();
-      } else {
-        navigation.navigateToRecipientDashboard();
+      if (!orgType) {
+        // If no organization type selected, show an error or use a default
+        console.error(`No ${role} type selected`);
+        return;
       }
+      
+      // Navigate to signup with role and organization type
+      router.push({
+        pathname: "/signup",
+        params: { role, organizationType: orgType }
+      });
+      
     } catch (error) {
       console.error('Error selecting role:', error);
     } finally {
@@ -42,11 +53,22 @@ export default function RoleSelectionScreen() {
       {/* Donor Section */}
       <View style={styles.roleContainer}>
         <Text style={styles.roleTitle}>Donor</Text>
-        <View style={styles.tagContainer}>
-          <Text style={styles.tag}>Restaurant</Text>
-          <Text style={styles.tag}>Grocery Store</Text>
-          <Text style={styles.tag}>Food Bank</Text>
-          <Text style={styles.tag}>Community Garden</Text>
+        <View style={styles.radioContainer}>
+          {donorTypes.map((type) => (
+            <TouchableOpacity
+              key={`donor-${type}`}
+              style={[
+                styles.radioOption,
+                selectedDonorType === type && styles.radioSelected
+              ]}
+              onPress={() => setSelectedDonorType(type)}
+            >
+              <View style={styles.radioButton}>
+                {selectedDonorType === type && <View style={styles.radioButtonSelected} />}
+              </View>
+              <Text style={styles.radioText}>{type}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
         <Button 
           title="Continue as donor" 
@@ -57,11 +79,22 @@ export default function RoleSelectionScreen() {
       {/* Recipient Section */}
       <View style={styles.roleContainer}>
         <Text style={styles.roleTitle}>Recipient</Text>
-        <View style={styles.tagContainer}>
-          <Text style={styles.tag}>Food Bank</Text>
-          <Text style={styles.tag}>Shelter</Text>
-          <Text style={styles.tag}>Community Center</Text>
-          <Text style={styles.tag}>School Program</Text>
+        <View style={styles.radioContainer}>
+          {recipientTypes.map((type) => (
+            <TouchableOpacity
+              key={`recipient-${type}`}
+              style={[
+                styles.radioOption,
+                selectedRecipientType === type && styles.radioSelected
+              ]}
+              onPress={() => setSelectedRecipientType(type)}
+            >
+              <View style={styles.radioButton}>
+                {selectedRecipientType === type && <View style={styles.radioButtonSelected} />}
+              </View>
+              <Text style={styles.radioText}>{type}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
         <Button 
           title="Continue as recipient" 
@@ -102,17 +135,36 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 10,
   },
-  tagContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
+  radioContainer: {
     marginBottom: 15,
   },
-  tag: {
-    backgroundColor: "#FFF",
+  radioOption: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  radioSelected: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
     borderRadius: 8,
+  },
+  radioButton: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#0A522D",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
+  radioButtonSelected: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: "#0A522D",
+  },
+  radioText: {
     fontSize: 14,
     fontWeight: "500",
   },
