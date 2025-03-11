@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button } from '../components/ui/Button';
+import { BackButton } from "../components/ui/BackButton";
 
 // Define types
 interface DonationListing {
@@ -72,146 +73,174 @@ export default function RecipientDashboard() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Available Donations</Text>
-      
-      <View style={styles.actionCard}>
-        <Text style={styles.cardTitle}>Find Food Near You</Text>
-        <Text style={styles.cardDescription}>
-          Search for available donations in your area
-        </Text>
-        <Button 
-          title="Search Donations" 
-          onPress={() => console.log('Search donations')}
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <BackButton toHome={true} text="Home" />
+        <Text style={styles.headerTitle}>Recipient Dashboard</Text>
+        <View style={styles.headerSpacer} />
       </View>
       
-      {loading ? (
-        <Text style={styles.loadingText}>Loading available donations...</Text>
-      ) : (
-        <ScrollView style={styles.donationsList}>
-          {availableDonations.map(donation => (
-            <TouchableOpacity 
-              key={donation.id} 
-              style={styles.donationItem}
-              onPress={() => console.log(`View donation ${donation.id}`)}
-            >
-              <View style={styles.donationImageContainer}>
-                <Image 
-                  source={{ uri: `${donation.imageUrl}/100x100` }} 
-                  style={styles.donationImage}
-                  resizeMode="cover"
-                />
-              </View>
-              <View style={styles.donationInfo}>
-                <Text style={styles.donationName}>{donation.name}</Text>
-                <Text style={styles.donationDescription} numberOfLines={2}>
-                  {donation.description}
-                </Text>
-                <View style={styles.donationMeta}>
+      <ScrollView style={styles.container}>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Welcome to your Recipient Dashboard</Text>
+          <Text style={styles.subtitleText}>Find available donations and schedule pickups</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Scheduled Pickups</Text>
+          
+          {/* Scheduled pickups section content */}
+        </View>
+
+        <View style={styles.actionSection}>
+          <Button
+            title="Find Available Donations"
+            onPress={() => {
+              // Navigate to available donations screen
+              console.log("Find donations pressed");
+            }}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Available Donations Nearby</Text>
+          
+          {availableDonations.length > 0 ? (
+            availableDonations.map((donation) => (
+              <View key={donation.id} style={styles.donationCard}>
+                <View style={styles.donationHeader}>
                   <Text style={styles.donorName}>{donation.donorName}</Text>
-                  <Text style={styles.distance}>{donation.distance}</Text>
+                  <Text style={styles.donationDistance}>{donation.distance}</Text>
                 </View>
-                <Button 
-                  title="Request" 
-                  onPress={() => console.log(`Request donation ${donation.id}`)}
-                />
+                <Text style={styles.donationItems}>{donation.description}</Text>
+                <View style={styles.donationFooter}>
+                  <Text style={styles.donationTime}>Posted: {/* donation.timePosted */}</Text>
+                  <Button
+                    title="Request"
+                    onPress={() => {
+                      // Request this donation
+                      console.log(`Requesting donation ${donation.id}`);
+                    }}
+                  />
+                </View>
               </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+            ))
+          ) : (
+            <Text style={styles.emptyMessage}>No donations available nearby</Text>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "white",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#0A522D',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
   },
-  actionCard: {
-    backgroundColor: '#F0F8F4',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 25,
-    borderLeftWidth: 4,
-    borderLeftColor: '#0A522D',
-  },
-  cardTitle: {
+  headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
     color: '#0A522D',
   },
-  cardDescription: {
-    marginBottom: 15,
-    color: '#333',
+  headerSpacer: {
+    width: 50, // Ensures header title stays centered
   },
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#666',
-  },
-  donationsList: {
+  container: {
     flex: 1,
+    backgroundColor: "#F9F9F9",
   },
-  donationItem: {
-    backgroundColor: '#F9F9F9',
+  welcomeContainer: {
+    padding: 20,
+    backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "#EFEFEF",
+  },
+  welcomeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#0A522D",
+    marginBottom: 8,
+  },
+  subtitleText: {
+    fontSize: 16,
+    color: "#666",
+  },
+  section: {
+    backgroundColor: "white",
+    padding: 20,
+    marginBottom: 15,
+    borderRadius: 8,
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  actionSection: {
+    padding: 20,
+    backgroundColor: "white",
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 15,
+    color: "#0A522D",
+  },
+  donationCard: {
+    backgroundColor: "#F9F9F9",
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
-    flexDirection: 'row',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
-  donationImageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginRight: 15,
-  },
-  donationImage: {
-    width: '100%',
-    height: '100%',
-  },
-  donationInfo: {
-    flex: 1,
-  },
-  donationName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#0A522D',
-  },
-  donationDescription: {
-    fontSize: 14,
-    color: '#555',
+  donationHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
-  donationMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
   donorName: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 16,
+    fontWeight: "bold",
   },
-  distance: {
+  donationDistance: {
+    fontSize: 12,
+    color: "#0A522D",
+    backgroundColor: "#E6F7ED",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+  },
+  donationItems: {
     fontSize: 14,
-    color: '#0A522D',
-    fontWeight: '500',
+    color: "#555",
+    marginBottom: 15,
+  },
+  donationFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  donationTime: {
+    fontSize: 12,
+    color: "#888",
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: "#999",
+    fontStyle: "italic",
+    textAlign: "center",
+    paddingVertical: 20,
   },
 }); 

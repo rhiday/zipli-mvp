@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import supabase from "../lib/supabase";
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { BackButton } from "../components/ui/BackButton";
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
@@ -60,84 +61,99 @@ export default function SignUpScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <BackButton text="Back" />
+      </View>
       
-      {organizationType && (
-        <View style={styles.organizationInfo}>
-          <Text style={styles.organizationTitle}>Organization Type:</Text>
-          <Text style={styles.organizationType}>{organizationType}</Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Sign Up</Text>
+        
+        {organizationType && (
+          <View style={styles.organizationInfo}>
+            <Text style={styles.organizationTitle}>Organization Type:</Text>
+            <Text style={styles.organizationType}>{organizationType}</Text>
+          </View>
+        )}
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={styles.input}
+          />
         </View>
-      )}
-      
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          style={styles.input}
-        />
-      </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Enter password"
-          secureTextEntry
-          style={styles.input}
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter password"
+            secureTextEntry
+            style={styles.input}
+          />
+        </View>
 
-      <Text style={styles.label}>Role</Text>
-      <View style={styles.roleButtons}>
+        <Text style={styles.label}>Role</Text>
+        <View style={styles.roleButtons}>
+          <TouchableOpacity 
+            style={[styles.roleButton, role === "donor" && styles.selectedRole]}
+            onPress={() => setRole("donor")}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.roleButtonText, role === "donor" && styles.selectedRoleText]}>
+              I'm a Donor
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.roleButton, role === "recipient" && styles.selectedRole]}
+            onPress={() => setRole("recipient")}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.roleButtonText, role === "recipient" && styles.selectedRoleText]}>
+              I'm a Recipient
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity 
-          style={[styles.roleButton, role === "donor" && styles.selectedRole]}
-          onPress={() => setRole("donor")}
+          style={[styles.button, isSigningUp && styles.buttonDisabled]}
+          onPress={handleSignUp}
+          disabled={isSigningUp || !email || !password}
           activeOpacity={0.7}
         >
-          <Text style={[styles.roleButtonText, role === "donor" && styles.selectedRoleText]}>
-            I'm a Donor
+          <Text style={styles.buttonText}>
+            {isSigningUp ? "Signing Up..." : "Sign Up"}
           </Text>
         </TouchableOpacity>
         
-        <TouchableOpacity 
-          style={[styles.roleButton, role === "recipient" && styles.selectedRole]}
-          onPress={() => setRole("recipient")}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.roleButtonText, role === "recipient" && styles.selectedRoleText]}>
-            I'm a Recipient
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account?</Text>
+          <TouchableOpacity onPress={() => router.push("/login")}>
+            <Text style={styles.linkText}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <TouchableOpacity 
-        style={[styles.button, isSigningUp && styles.buttonDisabled]}
-        onPress={handleSignUp}
-        disabled={isSigningUp || !email || !password}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.buttonText}>
-          {isSigningUp ? "Signing Up..." : "Sign Up"}
-        </Text>
-      </TouchableOpacity>
-      
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Already have an account?</Text>
-        <TouchableOpacity onPress={() => router.push("/login")}>
-          <Text style={styles.linkText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  header: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
   container: {
     flex: 1,
     padding: 20,

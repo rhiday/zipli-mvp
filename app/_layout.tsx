@@ -32,18 +32,26 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="role-selection" options={{ 
-          title: "Select Role",
           headerShown: false 
         }} />
         <Stack.Screen name="donor-dashboard" options={{ 
-          title: "Donor Dashboard",
-          headerShown: true
+          headerShown: false
         }} />
         <Stack.Screen name="recipient-dashboard" options={{ 
-          title: "Recipient Dashboard",
-          headerShown: true
+          headerShown: false
         }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="signup" options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="login" options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="reset-password" options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="+not-found" options={{
+          headerShown: false 
+        }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import { Button } from "../components/ui/Button";
+import { BackButton } from "../components/ui/BackButton";
 import { useAppNavigation } from "../app/navigation/AppNavigator";
 
 /**
@@ -46,71 +47,84 @@ export default function RoleSelectionScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Let's create a profile for your organisation.</Text>
-      <Text style={styles.subtitle}>Continue as:</Text>
-
-      {/* Donor Section */}
-      <View style={styles.roleContainer}>
-        <Text style={styles.roleTitle}>Donor</Text>
-        <View style={styles.radioContainer}>
-          {donorTypes.map((type) => (
-            <TouchableOpacity
-              key={`donor-${type}`}
-              style={[
-                styles.radioOption,
-                selectedDonorType === type && styles.radioSelected
-              ]}
-              onPress={() => setSelectedDonorType(type)}
-            >
-              <View style={styles.radioButton}>
-                {selectedDonorType === type && <View style={styles.radioButtonSelected} />}
-              </View>
-              <Text style={styles.radioText}>{type}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Button 
-          title="Continue as donor" 
-          onPress={() => handleRoleSelection('donor')}
-        />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <BackButton toHome={true} text="Home" />
       </View>
+      <View style={styles.container}>
+        <Text style={styles.title}>Let's create a profile for your organisation.</Text>
+        <Text style={styles.subtitle}>Continue as:</Text>
 
-      {/* Recipient Section */}
-      <View style={styles.roleContainer}>
-        <Text style={styles.roleTitle}>Recipient</Text>
-        <View style={styles.radioContainer}>
-          {recipientTypes.map((type) => (
-            <TouchableOpacity
-              key={`recipient-${type}`}
-              style={[
-                styles.radioOption,
-                selectedRecipientType === type && styles.radioSelected
-              ]}
-              onPress={() => setSelectedRecipientType(type)}
-            >
-              <View style={styles.radioButton}>
-                {selectedRecipientType === type && <View style={styles.radioButtonSelected} />}
-              </View>
-              <Text style={styles.radioText}>{type}</Text>
-            </TouchableOpacity>
-          ))}
+        {/* Donor Section */}
+        <View style={styles.roleContainer}>
+          <Text style={styles.roleTitle}>Donor</Text>
+          <View style={styles.radioContainer}>
+            {donorTypes.map((type) => (
+              <TouchableOpacity
+                key={`donor-${type}`}
+                style={[
+                  styles.radioOption,
+                  selectedDonorType === type && styles.radioSelected
+                ]}
+                onPress={() => setSelectedDonorType(type)}
+              >
+                <View style={styles.radioButton}>
+                  {selectedDonorType === type && <View style={styles.radioButtonSelected} />}
+                </View>
+                <Text style={styles.radioText}>{type}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Button 
+            title="Continue as donor" 
+            onPress={() => handleRoleSelection('donor')}
+          />
         </View>
-        <Button 
-          title="Continue as recipient" 
-          onPress={() => handleRoleSelection('recipient')}
-        />
+
+        {/* Recipient Section */}
+        <View style={styles.roleContainer}>
+          <Text style={styles.roleTitle}>Recipient</Text>
+          <View style={styles.radioContainer}>
+            {recipientTypes.map((type) => (
+              <TouchableOpacity
+                key={`recipient-${type}`}
+                style={[
+                  styles.radioOption,
+                  selectedRecipientType === type && styles.radioSelected
+                ]}
+                onPress={() => setSelectedRecipientType(type)}
+              >
+                <View style={styles.radioButton}>
+                  {selectedRecipientType === type && <View style={styles.radioButtonSelected} />}
+                </View>
+                <Text style={styles.radioText}>{type}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <Button 
+            title="Continue as recipient" 
+            onPress={() => handleRoleSelection('recipient')}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  header: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: "white",
-    justifyContent: "center",
   },
   title: {
     fontSize: 22,
