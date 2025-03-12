@@ -35,9 +35,24 @@ export default function RootLayout() {
           headerShown: false 
         }} />
         <Stack.Screen name="donor-dashboard" options={{ 
-          headerShown: false
+          headerShown: false 
+        }} />
+        <Stack.Screen name="donor-signup" options={{ 
+          headerShown: false 
+        }} />
+        <Stack.Screen name="recipient-signup" options={{ 
+          headerShown: false 
         }} />
         <Stack.Screen name="recipient-dashboard" options={{ 
+          headerShown: false 
+        }} />
+        <Stack.Screen name="request-sent" options={{ 
+          headerShown: false 
+        }} />
+        <Stack.Screen name="new-donation" options={{ 
+          headerShown: false 
+        }} />
+        <Stack.Screen name="create-donation" options={{ 
           headerShown: false
         }} />
         <Stack.Screen name="signup" options={{

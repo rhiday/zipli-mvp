@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, ActivityIndicator } from 'react-native';
 import { Button } from '../components/ui/Button';
 import { BackButton } from "../components/ui/BackButton";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Define types
 interface DonationListing {
@@ -19,7 +19,6 @@ interface DonationListing {
  * Shows available donations and request history
  */
 export default function RecipientDashboard() {
-  const router = useRouter();
   const [availableDonations, setAvailableDonations] = useState<DonationListing[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -105,7 +104,9 @@ export default function RecipientDashboard() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Available Donations Nearby</Text>
           
-          {availableDonations.length > 0 ? (
+          {loading ? (
+            <ActivityIndicator size="large" color="#0A522D" />
+          ) : availableDonations.length > 0 ? (
             availableDonations.map((donation) => (
               <View key={donation.id} style={styles.donationCard}>
                 <View style={styles.donationHeader}>

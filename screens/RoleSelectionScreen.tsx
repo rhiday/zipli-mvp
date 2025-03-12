@@ -1,48 +1,39 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
-import { useRouter } from "expo-router";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { Button } from "../components/ui/Button";
 import { BackButton } from "../components/ui/BackButton";
-import { useAppNavigation } from "../app/navigation/AppNavigator";
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { goToDonorSignup, goToRecipientSignup } from "../app/navigation/navigation";
 
 /**
  * RoleSelectionScreen - Screen for users to select their role
  * Either donor or recipient
  */
 export default function RoleSelectionScreen() {
-  const router = useRouter();
-  const navigation = useAppNavigation();
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectedDonorType, setSelectedDonorType] = useState<string | null>(null);
-  const [selectedRecipientType, setSelectedRecipientType] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   const donorTypes = ["Restaurant", "Grocery Store", "Food Bank", "Community Garden"];
   const recipientTypes = ["Food Bank", "Shelter", "Community Center", "School Program"];
 
-  // Handle role selection and navigate to signup form
-  const handleRoleSelection = async (role: 'donor' | 'recipient') => {
+  // Handle role selection and navigation
+  const handleRoleSelect = async (role: string) => {
     try {
-      setIsSelecting(true);
+      // Set the selected role
+      setSelectedRole(role);
       
-      // Get the selected organization type
-      const orgType = role === 'donor' ? selectedDonorType : selectedRecipientType;
-      
-      if (!orgType) {
-        // If no organization type selected, show an error or use a default
-        console.error(`No ${role} type selected`);
-        return;
+      // Navigate to signup with role
+      if (role === 'donor') {
+        // Navigate to the donor signup screen
+        goToDonorSignup();
+      } else {
+        // Navigate to recipient signup screen
+        goToRecipientSignup();
       }
-      
-      // Navigate to signup with role and organization type
-      router.push({
-        pathname: "/signup",
-        params: { role, organizationType: orgType }
-      });
       
     } catch (error) {
       console.error('Error selecting role:', error);
-    } finally {
-      setIsSelecting(false);
     }
   };
 
@@ -64,12 +55,12 @@ export default function RoleSelectionScreen() {
                 key={`donor-${type}`}
                 style={[
                   styles.radioOption,
-                  selectedDonorType === type && styles.radioSelected
+                  selectedRole === type && styles.radioSelected
                 ]}
-                onPress={() => setSelectedDonorType(type)}
+                onPress={() => handleRoleSelect(type)}
               >
                 <View style={styles.radioButton}>
-                  {selectedDonorType === type && <View style={styles.radioButtonSelected} />}
+                  {selectedRole === type && <View style={styles.radioButtonSelected} />}
                 </View>
                 <Text style={styles.radioText}>{type}</Text>
               </TouchableOpacity>
@@ -77,7 +68,7 @@ export default function RoleSelectionScreen() {
           </View>
           <Button 
             title="Continue as donor" 
-            onPress={() => handleRoleSelection('donor')}
+            onPress={() => handleRoleSelect('donor')}
           />
         </View>
 
@@ -90,12 +81,12 @@ export default function RoleSelectionScreen() {
                 key={`recipient-${type}`}
                 style={[
                   styles.radioOption,
-                  selectedRecipientType === type && styles.radioSelected
+                  selectedRole === type && styles.radioSelected
                 ]}
-                onPress={() => setSelectedRecipientType(type)}
+                onPress={() => handleRoleSelect(type)}
               >
                 <View style={styles.radioButton}>
-                  {selectedRecipientType === type && <View style={styles.radioButtonSelected} />}
+                  {selectedRole === type && <View style={styles.radioButtonSelected} />}
                 </View>
                 <Text style={styles.radioText}>{type}</Text>
               </TouchableOpacity>
@@ -103,7 +94,7 @@ export default function RoleSelectionScreen() {
           </View>
           <Button 
             title="Continue as recipient" 
-            onPress={() => handleRoleSelection('recipient')}
+            onPress={() => handleRoleSelect('recipient')}
           />
         </View>
       </View>

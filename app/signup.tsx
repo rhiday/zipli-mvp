@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { View, Text, TextInput, Alert, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import supabase from "../lib/supabase";
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { BackButton } from "../components/ui/BackButton";
 
 export default function SignUpScreen() {
@@ -9,21 +9,6 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
   const router = useRouter();
-  const params = useLocalSearchParams();
-  
-  // Get role and organization type from params
-  const [role, setRole] = useState(params.role as string || "recipient");
-  const [organizationType, setOrganizationType] = useState(params.organizationType as string || "");
-
-  // Update states if params change
-  useEffect(() => {
-    if (params.role) {
-      setRole(params.role as string);
-    }
-    if (params.organizationType) {
-      setOrganizationType(params.organizationType as string);
-    }
-  }, [params]);
 
   const handleSignUp = async () => {
     // Validate form
@@ -38,19 +23,14 @@ export default function SignUpScreen() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: { 
-            role,
-            organizationType 
-          },
-        },
       });
 
       if (error) {
         Alert.alert("Sign Up Failed", error.message);
       } else {
         Alert.alert("Success", "Check your email for confirmation!");
-        router.push('/login');
+        // Navigate to role selection for additional information
+        router.push('/role-selection');
       }
     } catch (err) {
       console.error("Unexpected signup error:", err);
@@ -68,13 +48,6 @@ export default function SignUpScreen() {
       
       <View style={styles.container}>
         <Text style={styles.title}>Sign Up</Text>
-        
-        {organizationType && (
-          <View style={styles.organizationInfo}>
-            <Text style={styles.organizationTitle}>Organization Type:</Text>
-            <Text style={styles.organizationType}>{organizationType}</Text>
-          </View>
-        )}
         
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Email</Text>
@@ -97,29 +70,6 @@ export default function SignUpScreen() {
             secureTextEntry
             style={styles.input}
           />
-        </View>
-
-        <Text style={styles.label}>Role</Text>
-        <View style={styles.roleButtons}>
-          <TouchableOpacity 
-            style={[styles.roleButton, role === "donor" && styles.selectedRole]}
-            onPress={() => setRole("donor")}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.roleButtonText, role === "donor" && styles.selectedRoleText]}>
-              I'm a Donor
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.roleButton, role === "recipient" && styles.selectedRole]}
-            onPress={() => setRole("recipient")}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.roleButtonText, role === "recipient" && styles.selectedRoleText]}>
-              I'm a Recipient
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <TouchableOpacity 
@@ -166,24 +116,6 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
   },
-  organizationInfo: {
-    backgroundColor: '#f0f8ff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4A90E2',
-  },
-  organizationTitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  organizationType: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
   inputContainer: {
     marginBottom: 16,
   },
@@ -200,32 +132,6 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     backgroundColor: '#f9f9f9',
-  },
-  roleButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 10,
-  },
-  roleButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-  },
-  selectedRole: {
-    backgroundColor: '#4A90E2',
-    borderColor: '#4A90E2',
-  },
-  roleButtonText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  selectedRoleText: {
-    color: 'white',
   },
   button: {
     backgroundColor: '#4A90E2',

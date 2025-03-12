@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppNavigation } from '../../app/navigation/AppNavigator';
+import { router } from 'expo-router';
 import { Colors } from '../../src/design-system/theme/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
 
@@ -22,15 +22,14 @@ export const BackButton: React.FC<BackButtonProps> = ({
   iconSize = 24,
   iconColor,
 }) => {
-  const navigation = useAppNavigation();
   const colorScheme = useColorScheme();
   const theme = colorScheme || 'light';
 
   const handlePress = () => {
     if (toHome) {
-      navigation.goHome();
+      router.push('/');
     } else {
-      navigation.goBack();
+      router.back();
     }
   };
 

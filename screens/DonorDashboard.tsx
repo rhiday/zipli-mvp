@@ -1,230 +1,162 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { Button } from '../components/ui/Button';
 import { BackButton } from "../components/ui/BackButton";
-
-// Define types
-interface Donation {
-  id: number;
-  name: string;
-  date: string;
-  status: 'Completed' | 'In Progress' | 'Pending';
-}
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { goToNewDonation } from '../app/navigation/navigation';
 
 /**
  * DonorDashboard - Dashboard screen for donor users
  * Shows available donation options and history
  */
 export default function DonorDashboard() {
-  const router = useRouter();
-  const [donations, setDonations] = useState<Donation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
+  const [donations, setDonations] = useState([]);
+  
+  // Get current time of day for greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning!";
+    if (hour < 18) return "Good afternoon!";
+    return "Good evening!";
+  };
 
-  // Simulating data loading
-  useEffect(() => {
-    const loadDonations = async () => {
-      try {
-        // Simulate API call
-        setLoading(true);
-        
-        // In a real app, this would be an API call
-        const mockDonations: Donation[] = [
-          { id: 1, name: 'Fresh Vegetables', date: '2023-03-01', status: 'Completed' },
-          { id: 2, name: 'Canned Goods', date: '2023-03-05', status: 'In Progress' },
-          { id: 3, name: 'Bread and Pastries', date: '2023-03-10', status: 'Pending' },
-        ];
-        
-        // Simulate network delay
-        setTimeout(() => {
-          setDonations(mockDonations);
-          setLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error('Error loading donations:', error);
-        setLoading(false);
-      }
-    };
+  const handleNewDonation = () => {
+    // Navigate to donation creation screen
+    goToNewDonation();
+  };
 
-    loadDonations();
-  }, []);
+  const handleExportCSV = () => {
+    // In a real app, this would generate and download a CSV file
+    console.log("Export as CSV pressed");
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Add Header with back button */}
       <View style={styles.header}>
         <BackButton toHome={true} text="Home" />
-        <Text style={styles.headerTitle}>Donor Dashboard</Text>
         <View style={styles.headerSpacer} />
       </View>
       
-      <ScrollView style={styles.container}>
-        <View style={styles.welcomeContainer}>
-          <Text style={styles.welcomeText}>Welcome to your Donor Dashboard</Text>
-          <Text style={styles.subtitleText}>Manage your donations and see your impact</Text>
+      <ScrollView style={styles.scrollContainer}>
+        {/* Profile Circle Placeholder */}
+        <View style={styles.profileContainer}>
+          <View style={styles.profileCircle} />
         </View>
 
-        <View style={styles.actionSection}>
-          <Button
-            title="Create New Donation"
-            onPress={() => {
-              // Navigate to donation creation screen
-              console.log("Create donation pressed");
-            }}
-          />
+        {/* Greeting */}
+        <Text style={styles.greeting}>{getGreeting()}</Text>
+        
+        {/* Active Donations Section */}
+        <Text style={styles.sectionTitle}>Active donations</Text>
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>You do not have any active donations</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Upcoming Donations</Text>
-          {donations.map((donation) => (
-            <View key={donation.id} style={styles.donationCard}>
-              <View style={styles.donationHeader}>
-                <Text style={styles.donationDate}>{donation.date}</Text>
-                <Text style={[
-                  styles.donationStatus,
-                  donation.status === "Completed" ? styles.statusCompleted : donation.status === "In Progress" ? styles.statusInProgress : styles.statusPending
-                ]}>
-                  {donation.status}
-                </Text>
-              </View>
-              <Text style={styles.donationName}>{donation.name}</Text>
-            </View>
-          ))}
+        {/* New Donation Button */}
+        <TouchableOpacity 
+          style={styles.newDonationButton}
+          onPress={handleNewDonation}
+        >
+          <Text style={styles.newDonationButtonText}>New donation</Text>
+        </TouchableOpacity>
 
-          {donations.length === 0 && (
-            <Text style={styles.emptyMessage}>No upcoming donations scheduled</Text>
-          )}
+        {/* Donation History Section */}
+        <Text style={styles.sectionTitle}>History of donations:</Text>
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyText}>History empty</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Donation History</Text>
-          {donations.map((donation) => (
-            <View key={donation.id} style={styles.donationCard}>
-              <View style={styles.donationHeader}>
-                <Text style={styles.donationDate}>{donation.date}</Text>
-                <Text style={[styles.donationStatus, styles.statusCompleted]}>
-                  {donation.status}
-                </Text>
-              </View>
-              <Text style={styles.donationName}>{donation.name}</Text>
-            </View>
-          ))}
-
-          {donations.length === 0 && (
-            <Text style={styles.emptyMessage}>No donation history yet</Text>
-          )}
-        </View>
+        {/* Export CSV Button */}
+        <TouchableOpacity 
+          style={styles.exportButton}
+          onPress={handleExportCSV}
+        >
+          <Text style={styles.exportButtonText}>Export as CSV</Text>
+        </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  scrollContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  profileContainer: {
+    alignItems: 'flex-end',
+    marginBottom: 10,
+  },
+  profileCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#aaaaaa",
+  },
+  greeting: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    color: "#999",
+    marginBottom: 16,
+  },
+  emptyCard: {
+    backgroundColor: "#FFF5F5",
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 100,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#333",
+  },
+  newDonationButton: {
+    backgroundColor: "#0A522D",
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    marginBottom: 40,
+    alignSelf: "flex-start",
+  },
+  newDonationButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+  exportButton: {
+    borderWidth: 1,
+    borderColor: "#0A522D",
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    marginVertical: 20,
+    alignSelf: "flex-start",
+  },
+  exportButtonText: {
+    color: "#0A522D",
+    fontSize: 18,
+    fontWeight: "500",
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0A522D',
+    padding: 10,
   },
   headerSpacer: {
-    width: 50, // Ensures header title stays centered
-  },
-  container: {
     flex: 1,
-    backgroundColor: "#F9F9F9",
-  },
-  welcomeContainer: {
-    padding: 20,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#EFEFEF",
-  },
-  welcomeText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#0A522D",
-    marginBottom: 8,
-  },
-  subtitleText: {
-    fontSize: 16,
-    color: "#666",
-  },
-  actionSection: {
-    padding: 20,
-    backgroundColor: "white",
-    marginBottom: 15,
-  },
-  section: {
-    backgroundColor: "white",
-    padding: 20,
-    marginBottom: 15,
-    borderRadius: 8,
-    marginHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 15,
-    color: "#0A522D",
-  },
-  donationCard: {
-    backgroundColor: "#F9F9F9",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  donationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  donationDate: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  donationStatus: {
-    fontSize: 12,
-    fontWeight: "bold",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  statusCompleted: {
-    backgroundColor: "#E6F7ED",
-    color: "#0A522D",
-  },
-  statusInProgress: {
-    backgroundColor: "#FFF3CD",
-    color: "#856404",
-  },
-  statusPending: {
-    backgroundColor: "#F8D7DA",
-    color: "#721C24",
-  },
-  donationName: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  emptyMessage: {
-    fontSize: 16,
-    color: "#999",
-    fontStyle: "italic",
-    textAlign: "center",
-    paddingVertical: 20,
   },
 }); 
